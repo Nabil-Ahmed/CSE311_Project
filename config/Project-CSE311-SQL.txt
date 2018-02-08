@@ -1,0 +1,130 @@
+CREATE TABLE shop(
+	shopID INT UNIQUE,
+    shopName TEXT,
+    shopType TEXT,
+    shopAddress TEXT,
+    PRIMARY KEY(shopID)
+);
+
+CREATE TABLE product( 
+
+	productID INT UNIQUE,
+	productName TEXT, 
+	productType TEXT, 
+	productModel TEXT, 
+	productColor TEXT,
+	shopID INT NOT NULL, 
+	PRIMARY KEY(productID) 
+);
+
+CREATE TABLE shopkeeper(
+	skID INT AUTO_INCREMENT,
+    skEmail TEXT NOT NULL,
+    skPassword TEXT NOT NULL,
+    skName TEXT,
+    skContact TEXT,
+    shopID INT NOT NULL,
+    PRIMARY KEY(skID)
+);
+
+CREATE TABLE inventory(
+	productCount INT,
+    shopID INT NOT NULL,
+    productID INT NOT NULL,
+    PRIMARY KEY(shopID, productID)
+);
+
+CREATE TABLE review(
+    comment TEXT,
+    rating INT,
+    shopID INT NOT NULL
+ );
+
+CREATE TABLE price(
+    price FLOAT,
+    productID INT NOT NULL,
+    shopID INT NOT NULL,
+    PRIMARY KEY(shopID, productID)
+);
+
+
+// INSERTS
+
+INSERT INTO `product` (`productID`, `productName`, `productType`, `productModel`, `productColor`, 'shopID') VALUES ('1', 'Samsung Note 3', 'Mobile', 'Note 3', 'White', '1'), ('2', 'Philips Magic Wand', 'Appliance', 'SRT500', 'Grey', '2');
+
+// QUERY
+
+SELECT product.productName, shop.shopName, product.productID, price.price 
+FROM product 
+INNER JOIN price 
+ON product.productID = price.productID 
+INNER JOIN shop 
+ON price.shopID = shop.shopID
+ORDER BY price DESC;
+
+
+
+SELECT shop.shopName, product.productID, product.productName, inventory.productCount
+FROM shop
+INNER JOIN inventory
+ON shop.shopID=inventory.shopID
+INNER JOIN product
+ON inventory.productID=product.productID
+
+
+
+SELECT shop.shopName, product.productID, product.productName, inventory.productCount,price.price
+FROM shop
+INNER JOIN inventory
+ON shop.shopID=inventory.shopID
+INNER JOIN product
+ON inventory.productID=product.productID
+INNER JOIN price
+ON product.productID=price.productID
+
+SELECT shop.shopID, shop.shopName, review.rating, review.comment
+FROM shop
+INNER JOIN review
+ON shop.shopID = review.shopID
+ORDER BY review.rating;
+
+
+SELECT shop.shopName, shop.shopID, COUNT(product.productID) AS 'Type of Products'
+FROM shop
+INNER JOIN product
+WHERE shop.shopID = product.shopID
+GROUP BY shop.shopName;
+
+
+
+SELECT shop.shopName, shop.shopID, COUNT(product.productID) AS 'Type of Products In Store'
+FROM shop
+INNER JOIN product
+WHERE shop.shopID = product.shopID AND shop.shopName = 'Samsung Store';
+
+SELECT shop.shopName, price.price, product.productName
+FROM shop
+INNER JOIN price
+ON shop.shopID = price.shopID
+INNER JOIN product
+ON product.productID = price.productID
+WHERE product.productName LIKE '%Note%'
+HAVING price.price < 30000;
+
+SELECT shop.shopName,product.productName,product.productID,price.price
+FROM shop
+INNER JOIN price
+ON shop.shopID = price.shopID
+INNER JOIN product
+ON price.productID=product.productID
+WHERE product.productName = 'Chicken Fry'
+
+SELECT shop.shopName,product.productName, MIN(price.price) 
+FROM shop 
+INNER JOIN price 
+ON shop.shopID = price.shopID 
+INNER JOIN product 
+ON product.productID=price.productID
+GROUP BY shop.shopName
+
+
